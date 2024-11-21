@@ -1,14 +1,34 @@
-//console.error("ac:init");
-
+/*window.clientGeometry
+x : 2560
+y : 0
+width : 1080
+height : 1920
+left : 2560
+right : 3640
+top : 0
+bottom : 1920
+*/
+// function dump(obj) {
+//    let keys=Object.keys(obj)
+//    let str=""
+//    for(let i=0;i<keys.length;i++){
+//     str+=keys[i] +" : "+obj[keys[i]]+"\n"
+//    }
+//    console.error(str)
+// }
+// workspace.windowActivated.connect(updateActivated);
+// function updateActivated(win) {
+//     dump(win);
+// }
+//console.error("ac:init");   
 function selectNextWindow(direction) {
   //console.error("ac:selectNextWindow");
-
-  const windowList = workspace.windowList();
-  let underCursorWindows = [];
+  const windowList = workspace.stackingOrder; //index 0 en üstteki pencere 
+  
+  let normalWindows = [];
   let maximizedWindows = [];
   const cursorPos = workspace.cursorPos;
 
-  // Categorize windows
   for (const win of windowList) {
     if (win.desktopWindow || win.minimized) {
       continue; // Ignore desktop and minimized windows
@@ -25,44 +45,41 @@ function selectNextWindow(direction) {
       cursorPos.y < win.y + win.height
     ) {
       if (!isMaximized) {
-        underCursorWindows.push(win);
+        normalWindows.unshift(win);
       }
     }
 
     if (isMaximized) {
-      maximizedWindows.push(win);
+      maximizedWindows.unshift(win);
     }
   }
 
-  if (underCursorWindows.length > 0) {
-    // Cycle through non-maximized windows under cursor
-    let currentActiveIndex = underCursorWindows.findIndex((win) => win.active);
-
-    let nextIdx =
-      currentActiveIndex === -1
-        ? 0
-        : (currentActiveIndex + direction + underCursorWindows.length) %
-          underCursorWindows.length;
-
-    workspace.activeWindow = underCursorWindows[nextIdx];
-    return;
+  if (normalWindows.length > 0) {
+    let frontWindow = normalWindows[0];
+    if(frontWindow.active){
+      if(normalWindows.length>1){
+        workspace.activeWindow = normalWindows[normalWindows.length-1];
+        return;
+      }
+    }
+    else{
+      workspace.activeWindow = frontWindow;
+      return;
+    }
   }
-
-  if (maximizedWindows.length > 0) {
-    // If no non-maximized windows, switch between maximized windows
-    let currentActiveIndex = maximizedWindows.findIndex((win) => win.active);
-
-    let nextIdx =
-      currentActiveIndex === -1
-        ? 0
-        : (currentActiveIndex + direction + maximizedWindows.length) %
-          maximizedWindows.length;
-
-    workspace.activeWindow = maximizedWindows[nextIdx];
-    return;
+ if (maximizedWindows.length > 0) {
+    let frontWindow = maximizedWindows[0];
+    if(frontWindow.active){
+      if(maximizedWindows.length>1){
+        workspace.activeWindow = maximizedWindows[maximizedWindows.length-1];
+        return;
+      }
+    }
+    else{
+      workspace.activeWindow = frontWindow;
+      return;
+    }
   }
-
-  //console.error("No windows to switch to.");
 }
 
 registerShortcut(
