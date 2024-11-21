@@ -8,14 +8,14 @@ right : 3640
 top : 0
 bottom : 1920
 */
-// function dump(obj) {
-//    let keys=Object.keys(obj)
-//    let str=""
-//    for(let i=0;i<keys.length;i++){
-//     str+=keys[i] +" : "+obj[keys[i]]+"\n"
-//    }
-//    console.error(str)
-// }
+function dump(obj) {
+   let keys=Object.keys(obj)
+   let str=""
+   for(let i=0;i<keys.length;i++){
+    str+=keys[i] +" : "+obj[keys[i]]+"\n"
+   }
+   console.error(str)
+}
 // workspace.windowActivated.connect(updateActivated);
 // function updateActivated(win) {
 //     dump(win);
@@ -59,8 +59,9 @@ function selectNextWindow(direction) {
     if(frontWindow.active){
       if(normalWindows.length>1){
         workspace.activeWindow = normalWindows[normalWindows.length-1];
-        return;
+        //return;
       }
+      return;
     }
     else{
       workspace.activeWindow = frontWindow;
@@ -70,10 +71,11 @@ function selectNextWindow(direction) {
  if (maximizedWindows.length > 0) {
     let frontWindow = maximizedWindows[0];
     if(frontWindow.active){
+
       if(maximizedWindows.length>1){
         workspace.activeWindow = maximizedWindows[maximizedWindows.length-1];
-        return;
       }
+      return;
     }
     else{
       workspace.activeWindow = frontWindow;
