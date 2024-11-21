@@ -8,14 +8,14 @@ right : 3640
 top : 0
 bottom : 1920
 */
-function dump(obj) {
-  let keys = Object.keys(obj);
-  let str = "";
-  for (let i = 0; i < keys.length; i++) {
-      str += keys[i] + " : " + obj[keys[i]] + "\n";
-  }
-  console.error(str);
-}
+// function dump(obj) {
+//   let keys = Object.keys(obj);
+//   let str = "";
+//   for (let i = 0; i < keys.length; i++) {
+//       str += keys[i] + " : " + obj[keys[i]] + "\n";
+//   }
+//   console.error(str);
+// }
 // workspace.windowActivated.connect(updateActivated);
 // function updateActivated(win) {
 //     dump(win);
