@@ -20,10 +20,27 @@ function intersect(cursorX, cursorY, radius, rect) {
 
 function switchToSpecificApp(appClassName,screen) {
     const windowList = workspace.stackingOrder;
-    for (const win of windowList) {
-        if(win.resourceClass === appClassName && !win.minimized && win.output==screen && workspace.activeWindow!=win){
-            workspace.activeWindow = win;
-            return;
+    for (var i=windowList.length-1;i>=0;i--) {
+        const win_reverse=windowList[i]
+        if(win_reverse.resourceClass === appClassName && !win_reverse.minimized && win_reverse.output==screen){
+            if(workspace.activeWindow != win_reverse){
+                workspace.activeWindow = win_reverse
+                return
+            }
+            else
+            {
+                for (const win_forward of windowList){
+                    if(win_forward.resourceClass === appClassName && !win_forward.minimized && win_forward.output==screen){
+                        if(win_forward != win_reverse){
+                            workspace.activeWindow = win_forward
+                            return
+                        }
+
+                    }
+
+                }
+            }
+            
         }
     }
     //console.error("Specific app not found or minimized:", appClassName);
@@ -46,21 +63,20 @@ function selectNextWindow(direction) {
     
     if (isTop) {
         switchToSpecificApp("google-chrome-unstable",screen);
-        return;
+        return
     }
     if (isLeft) {
         switchToSpecificApp("Code",screen);
-        return;
+        return
     }
     if (isRight) {
         switchToSpecificApp("Code",screen);
-        return;
+        return
     }
     if (isBottom) {
         switchToSpecificApp("org.kde.konsole",screen);
-        return;
+        return
     }
-
     for (const win of windowList) {
         if (win.desktopWindow || win.minimized) {
             continue; // Ignore desktop and minimized windows
