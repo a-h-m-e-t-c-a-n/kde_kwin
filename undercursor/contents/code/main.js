@@ -47,7 +47,7 @@ function switchToSpecificApp(appClassName,screen) {
 }
 
 function selectNextWindow(direction) {
-    const windowList = workspace.stackingOrder; // Index 0 is the top-most window
+    const windowList = workspace.stackingOrder; // BackWindow:0 FrontWindow=length-1
     let normalWindows = [];
     let maximizedWindows = [];
 
@@ -87,38 +87,35 @@ function selectNextWindow(direction) {
         
         if (intersect(cursorPos.x, cursorPos.y, 150, win.clientGeometry)) {
             if (!isMaximized) {
-                normalWindows.unshift(win);
+                normalWindows.push(win);
             }
         }
 
         if (isMaximized) {
-            maximizedWindows.unshift(win);
+            maximizedWindows.push(win);
         }
     }
 
     if (normalWindows.length > 0) {
-        let frontWindow = normalWindows[0];
+        let frontWindow = normalWindows[normalWindows.length - 1];
         if (frontWindow.active) {
             if (normalWindows.length > 1) {
-                workspace.activeWindow = normalWindows[normalWindows.length - 1];
+                workspace.activeWindow = normalWindows[0];
             }
-            return;
-        } else {
+        } 
+        else {
             workspace.activeWindow = frontWindow;
-            return;
         }
     }
-
-    if (maximizedWindows.length > 0) {
-        let frontWindow = maximizedWindows[0];
+    else if (maximizedWindows.length > 0) {
+        let frontWindow = maximizedWindows[maximizedWindows.length - 1];
         if (frontWindow.active) {
             if (maximizedWindows.length > 1) {
-                workspace.activeWindow = maximizedWindows[maximizedWindows.length - 1];
+                workspace.activeWindow = maximizedWindows[0];
             }
-            return;
-        } else {
+        } 
+        else {
             workspace.activeWindow = frontWindow;
-            return;
         }
     }
 }
