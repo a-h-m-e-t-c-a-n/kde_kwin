@@ -22,7 +22,7 @@ function switchToSpecificApp(appClassName,screen) {
     const windowList = workspace.stackingOrder;
     for (var i=windowList.length-1;i>=0;i--) {
         const win_reverse=windowList[i]
-        if(win_reverse.resourceClass === appClassName && !win_reverse.minimized && win_reverse.output==screen){
+        if(win_reverse.resourceClass.includes(appClassName) && !win_reverse.minimized && win_reverse.output==screen){
             if(workspace.activeWindow != win_reverse){
                 workspace.activeWindow = win_reverse
                 return
@@ -30,7 +30,7 @@ function switchToSpecificApp(appClassName,screen) {
             else
             {
                 for (const win_forward of windowList){
-                    if(win_forward.resourceClass === appClassName && !win_forward.minimized && win_forward.output==screen){
+                    if(win_forward.resourceClass.includes(appClassName) && !win_forward.minimized && win_forward.output==screen){
                         if(win_forward != win_reverse){
                             workspace.activeWindow = win_forward
                             return
@@ -45,38 +45,76 @@ function switchToSpecificApp(appClassName,screen) {
     }
     //console.error("Specific app not found or minimized:", appClassName);
 }
+function handleEdgeSwitch() {
+    const cursorPos = workspace.cursorPos;
+    const screen = workspace.screenAt(cursorPos);
 
-function selectNextWindow(direction) {
+    const edgeAppMap = {
+        "top-left": "Code",       
+        "top-right": "chrome",      
+        "bottom-left": "konsole",    
+        "bottom-right": "konsole",   
+        "right-up": "chrome",       
+        "right-down": "konsole",     
+        "left-up": "chrome",        
+        "left-down": "Code"       
+    };
+
+    const { top, left, right, bottom } = screen.geometry;
+    console.error((left+(right-left)/2))
+
+    const isTopLeft = cursorPos.y <= top + 10 && cursorPos.x  <  (left+(right-left)/2);
+    const isTopRight = cursorPos.y <= top + 10 && cursorPos.x > (left+(right-left)/2);
+    const isBottomLeft = cursorPos.y >= bottom - 10 && cursorPos.x  <  (left+(right-left)/2);
+    const isBottomRight = cursorPos.y >= bottom - 10 && cursorPos.x  >  (left+(right-left)/2);
+    const isLeftUp = cursorPos.x <= left + 100 && cursorPos.y  <  (top+(bottom-top)/2);
+    const isLeftDown = cursorPos.x <= left + 100 && cursorPos.y  >  (top+(bottom-top)/2);
+    const isRightUp = cursorPos.x >= right - 5 && cursorPos.y  <  (top+(bottom-top)/2);
+    const isRightDown = cursorPos.x >= right - 5 && cursorPos.y  >  (top+(bottom-top)/2);
+
+    if (isTopLeft) {
+        switchToSpecificApp(edgeAppMap["top-left"], screen);
+        return true;
+    }
+    if (isTopRight) {
+        switchToSpecificApp(edgeAppMap["top-right"], screen);
+        return true;
+    }
+    if (isBottomLeft) {
+        switchToSpecificApp(edgeAppMap["bottom-left"], screen);
+        return true;
+    }
+    if (isBottomRight) {
+        switchToSpecificApp(edgeAppMap["bottom-right"], screen);
+        return true;
+    }
+    if (isLeftUp) {
+        switchToSpecificApp(edgeAppMap["left-up"], screen);
+        return true;
+    }
+    if (isLeftDown) {
+        switchToSpecificApp(edgeAppMap["left-down"], screen);
+        return true;
+    }
+    if (isRightUp) {
+        switchToSpecificApp(edgeAppMap["right-up"], screen);
+        return true;
+    }
+    if (isRightDown) {
+        switchToSpecificApp(edgeAppMap["right-down"], screen);
+        return true;
+    }
+   
+    return false; // No match found
+}
+
+function selectNextWindow() {
+    const cursorPos = workspace.cursorPos;
     const windowList = workspace.stackingOrder; // BackWindow:0 FrontWindow=length-1
+
     let normalWindows = [];
     let maximizedWindows = [];
-
-    const cursorPos = workspace.cursorPos;
-
-    const screen = workspace.screenAt(cursorPos);
-    
-    const cornerThreshold = 50;
-    const isTop = cursorPos.y <= (screen.geometry.top+cornerThreshold)
-    const isLeft = cursorPos.x <= (screen.geometry.left+cornerThreshold)
-    const isBottom = cursorPos.y >= (screen.geometry.bottom-cornerThreshold)
-    const isRight = cursorPos.x >= (screen.geometry.right-cornerThreshold)
-    
-    if (isTop) {
-        switchToSpecificApp("google-chrome-unstable",screen);
-        return
-    }
-    if (isLeft) {
-        switchToSpecificApp("Code",screen);
-        return
-    }
-    if (isRight) {
-        switchToSpecificApp("Code",screen);
-        return
-    }
-    if (isBottom) {
-        switchToSpecificApp("org.kde.konsole",screen);
-        return
-    }
+   
     for (const win of windowList) {
         if (win.desktopWindow || win.minimized) {
             continue; // Ignore desktop and minimized windows
@@ -85,7 +123,7 @@ function selectNextWindow(direction) {
         let area = workspace.clientArea(KWin.MaximizeArea, win);
         let isMaximized = win.width > area.width - 10 && win.height > area.height - 10;
         
-        if (intersect(cursorPos.x, cursorPos.y, 150, win.clientGeometry)) {
+        if (intersect(cursorPos.x, cursorPos.y, 10, win.clientGeometry)) {
             if (!isMaximized) {
                 normalWindows.push(win);
             }
@@ -125,6 +163,8 @@ registerShortcut(
     "Select next window under mouse",
     "Meta+I",
     function () {
-        selectNextWindow(1);
+        if(!handleEdgeSwitch()){
+            selectNextWindow();
+        }
     }
 );
