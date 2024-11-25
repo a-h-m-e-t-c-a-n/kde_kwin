@@ -53,7 +53,7 @@ function handleEdgeSwitch() {
         "top-left": "Code",       
         "top-right": "chrome",      
         "bottom-left": "konsole",    
-        "bottom-right": "konsole",   
+        "bottom-right": "dolphin",   
         "right-up": "chrome",       
         "right-down": "konsole",     
         "left-up": "chrome",        
@@ -61,16 +61,21 @@ function handleEdgeSwitch() {
     };
 
     const { top, left, right, bottom } = screen.geometry;
-    console.error((left+(right-left)/2))
 
-    const isTopLeft = cursorPos.y <= top + 10 && cursorPos.x  <  (left+(right-left)/2);
-    const isTopRight = cursorPos.y <= top + 10 && cursorPos.x > (left+(right-left)/2);
-    const isBottomLeft = cursorPos.y >= bottom - 10 && cursorPos.x  <  (left+(right-left)/2);
-    const isBottomRight = cursorPos.y >= bottom - 10 && cursorPos.x  >  (left+(right-left)/2);
-    const isLeftUp = cursorPos.x <= left + 100 && cursorPos.y  <  (top+(bottom-top)/2);
-    const isLeftDown = cursorPos.x <= left + 100 && cursorPos.y  >  (top+(bottom-top)/2);
-    const isRightUp = cursorPos.x >= right - 5 && cursorPos.y  <  (top+(bottom-top)/2);
-    const isRightDown = cursorPos.x >= right - 5 && cursorPos.y  >  (top+(bottom-top)/2);
+    const leftMargin=370
+    const rightMargin=20
+    const topMargin=20
+    const bottomMargin=20
+
+    const isLeftUp = cursorPos.x <= left + leftMargin && cursorPos.y  <  (top+(bottom-top)/2);
+    const isLeftDown = cursorPos.x <= left + leftMargin && cursorPos.y  >  (top+(bottom-top)/2);
+    const isRightUp = cursorPos.x >= right - rightMargin && cursorPos.y  <  (top+(bottom-top)/2);
+    const isRightDown = cursorPos.x >= right - rightMargin && cursorPos.y  >  (top+(bottom-top)/2);
+
+    const isTopLeft = cursorPos.y <= top + topMargin && cursorPos.x  <  (left+(right-left)/2);
+    const isTopRight = cursorPos.y <= top + topMargin && cursorPos.x > (left+(right-left)/2);
+    const isBottomLeft = cursorPos.y >= bottom - bottomMargin && cursorPos.x  <  (left+(right-left)/2);
+    const isBottomRight = cursorPos.y >= bottom - bottomMargin && cursorPos.x  >  (left+(right-left)/2);
 
     if (isTopLeft) {
         switchToSpecificApp(edgeAppMap["top-left"], screen);
